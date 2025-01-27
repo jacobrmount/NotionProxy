@@ -1,24 +1,21 @@
 import fetch from "node-fetch";
 
 export default async function handler(req, res) {
-  // ✅ Fix: Allow CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // ✅ Fix: Handle CORS preflight request
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
-  // ✅ Fix: Debugging GET request
   if (req.method === "GET") {
     return res.status(200).json({ message: "Hello from GET! Your Notion proxy is running." });
   }
 
   try {
-    // ✅ Fix: Ensure req.body is properly parsed
-    const requestBody = await req.json(); // Vercel does not auto-parse JSON
+    // ✅ Fix: Use `req.body` instead of `req.json()`
+    const requestBody = req.body;
 
     if (!requestBody) {
       return res.status(400).json({ error: "Missing request body" });
@@ -31,7 +28,7 @@ export default async function handler(req, res) {
     }
 
     // ✅ Fix: Ensure API keys are defined (Use Environment Variables)
-    const NOTION_TOKEN = process.env.NOTION_TOKEN; // Set in Vercel
+    const NOTION_TOKEN = process.env.NOTION_TOKEN;
     const NOTION_VERSION = "2022-06-28";
 
     if (!NOTION_TOKEN) {
