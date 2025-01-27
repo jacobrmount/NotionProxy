@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "notion-proxy",
   "version": "1.0.0",
   "description": "A serverless proxy for Notion API running on Vercel",
