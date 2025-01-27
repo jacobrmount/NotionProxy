@@ -20,22 +20,19 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing 'notionEndpoint' in request body." });
     }
 
-    const NOTION_TOKEN = "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";
-    const NOTION_VERSION = "2022-06-28";
-
-    if (!NOTION_TOKEN) {
-      return res.status(500).json({ error: "Server misconfiguration: NOTION_TOKEN is missing." });
-    }
-
     const notionResponse = await fetch(notionEndpoint, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${NOTION_TOKEN}`,  // ✅ Fixed Authorization header
-        "Notion-Version": NOTION_VERSION,
+        "Authorization": `Bearer ${process.env.NOTION_TOKEN}`,
+        "Notion-Version": process.env.NOTION_VERSION || "2022-06-28",
         "Content-Type": "application/json"
       },
       body: JSON.stringify(body)
     });
+
+    if (!NOTION_TOKEN) {
+      return res.status(500).json({ error: "Server misconfiguration: NOTION_TOKEN is missing." });
+    }
 
     if (!notionResponse.ok) {
       return res.status(notionResponse.status).json({ error: `Notion API error: ${notionResponse.statusText}` });
