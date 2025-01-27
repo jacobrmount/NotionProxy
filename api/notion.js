@@ -1,4 +1,4 @@
-import fetch from "node-fetch"; // ✅ Correct import for ES Modules
+import fetch from "node-fetch"; // ✅ Correct ES Module import
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -23,16 +23,14 @@ export default async function handler(req, res) {
     const NOTION_TOKEN = "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";
     const NOTION_VERSION = "2022-06-28";
 
-    // Ensure the token is set (prevents authentication errors)
     if (!NOTION_TOKEN) {
       return res.status(500).json({ error: "Server misconfiguration: NOTION_TOKEN is missing." });
     }
 
-    // Forward the request to Notion API
     const notionResponse = await fetch(notionEndpoint, {
       method: "POST",
       headers: {
-        "Authorization": NOTION_TOKEN,
+        "Authorization": `Bearer ${NOTION_TOKEN}`,  // ✅ Fixed Authorization header
         "Notion-Version": NOTION_VERSION,
         "Content-Type": "application/json"
       },
