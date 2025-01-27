@@ -2,8 +2,16 @@
 // Place this file in "api/notion.js" at the root of your repo (or in the folder 
 // you set as Vercel's "Root Directory"). This version handles both GET and POST 
 // so you can test via browser GET requests and still proxy Notion for POST.
-import fetch from 'node-fetch';
 
+const notionResponse = await fetch(notionEndpoint, {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${notionToken}`,
+    'Notion-Version': notionVersion,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(body)
+});
 export default async function handler(req, res) {
   // If someone visits this URL in a browser (making a GET request),
   // we'll return a simple JSON message to confirm the route is working:
