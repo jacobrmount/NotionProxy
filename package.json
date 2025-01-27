@@ -1,0 +1,17 @@
+{
+  "name": "notion-proxy",
+  "version": "1.0.0",
+  "description": "A serverless proxy for Notion API running on Vercel",
+  "main": "api/notion.js",
+  "scripts": {
+    "start": "node api/notion.js",
+    "build": "echo 'No build step required'",
+    "vercel-build": "npm install"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}
