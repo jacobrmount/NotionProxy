@@ -1,58 +1,52 @@
-(function() {
-  // Prepare the Notion query body
-  const todayPlus2Weeks = new Date();
-  todayPlus2Weeks.setDate(todayPlus2Weeks.getDate() + 14);
-  const cutoffDate = todayPlus2Weeks.toISOString().split('T')[0];
+// api/notion.js
+import fetch from 'node-fetch';
 
-  const bodyData = {
-    // The filter/sorts from your original script
-    filter: {
-      and: [
-        {
-          or: [
-            { property: "Status", select: { equals: "Todo" } },
-            { property: "Status", select: { equals: "Needs Review" } },
-            { property: "Status", select: { equals: "In Progress" } }
-          ]
-        },
-        {
-          property: "Due",
-          date: {
-            on_or_before: cutoffDate
-          }
-        }
-      ]
-    },
-    sorts: [
-      { property: "Due", direction: "ascending" },
-      { property: "Status", direction: "descending" }
-    ]
-  };
+/**
+ * A Vercel serverless function that proxies requests to Notion's API.
+ * Add the following environment variables on Vercel:
+ *   NOTION_TOKEN, NOTION_VERSION
+ */
+export default async function handler(req, res) {
+  // Only accept POST requests
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-  // The final POST request to your Vercel function
-  fetch("https://notion-proxy-abc123.vercel.app/api/notion", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      // The serverless function expects "notionEndpoint" and "body"
-      notionEndpoint: "https://api.notion.com/v1/databases/15bed8dc2e838174bb19d5423c4e2ddf/query",
-      body: bodyData
-    })
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (!data.results || data.results.length === 0) {
-        sendToWidgy("No tasks found.");
-        return;
-      }
-      const firstItem = data.results[0];
-      const taskName =
-        firstItem.properties["Task name"]?.title?.[0]?.plain_text || "Unnamed Task";
-      sendToWidgy(taskName);
-    })
-    .catch(error => {
-      sendToWidgy("Error fetching tasks: " + error.message);
+  try {
+    // We'll expect the client to send:
+    // {
+    //   notionEndpoint: "https://api.notion.com/v1/databases/xxx/query",
+    //   body: { filter: { ... }, sorts: [ ... ] }
+    // }
+    const { notionEndpoint, body } = req.body || {};
+
+    if (!notionEndpoint) {
+      return res.status(400).json({ error: 'notionEndpoint is required in request body' });
+    }
+
+    // Build headers from environment variables
+    const notionToken = process.env.NOTION_TOKEN;
+    const notionVersion = process.env.NOTION_VERSION || '2022-06-28';
+
+    // Forward the request to Notion
+    const notionResponse = await fetch(notionEndpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${notionToken}`,
+        'Content-Type': 'application/json',
+        'Notion-Version': notionVersion
+      },
+      body: JSON.stringify(body)
     });
-})();
+
+    const data = await notionResponse.json();
+
+    // Return the data to the client
+    // Add permissive CORS headers to allow Widgy's Safari to accept
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
