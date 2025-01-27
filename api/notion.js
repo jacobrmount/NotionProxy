@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     const notionResponse = await fetch(notionEndpoint, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${process.env.NOTION_TOKEN}`,
+        "Authorization": `${process.env.NOTION_TOKEN}`,
         "Notion-Version": process.env.NOTION_VERSION || "2022-06-28",
         "Content-Type": "application/json"
       },
