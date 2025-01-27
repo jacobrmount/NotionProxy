@@ -1,6 +1,3 @@
-const NOTION_TOKEN = "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"
-const NOTION_VERSION = "2022-06-28"
-
 export default async function handler(req, res) {
   // Allow CORS for Widgy & Safari WebView
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -26,8 +23,8 @@ export default async function handler(req, res) {
     }
 
     // Use environment variables instead of hardcoded tokens
-    const NOTION_TOKEN = process.NOTION_TOKEN;
-    const NOTION_VERSION = process.NOTION_VERSION;
+    const NOTION_TOKEN = "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";
+    const NOTION_VERSION = "2022-06-28";
 
     // Ensure the token is set (prevents authentication errors)
     if (!NOTION_TOKEN) {
@@ -38,7 +35,7 @@ export default async function handler(req, res) {
     const notionResponse = await fetch(notionEndpoint, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${NOTION_TOKEN}`,
+        "Authorization": ${NOTION_TOKEN},
         "Notion-Version": NOTION_VERSION,
         "Content-Type": "application/json"
       },
