@@ -24,10 +24,6 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing 'notionEndpoint' or 'body' in request" });
     }
 
-    // 🔥 HARD-CODED API TOKEN TEMP FIX (REMOVE THIS AFTER TESTING)
-    const NOTION_TOKEN = "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"; 
-    const NOTION_VERSION = "2022-06-28";
-
     const notionResponse = await fetch(notionEndpoint, {
       method: "POST",
       headers: {
