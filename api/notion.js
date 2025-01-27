@@ -1,3 +1,6 @@
+const NOTION_TOKEN = "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"
+const NOTION_VERSION = "2022-06-28"
+
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -21,8 +24,8 @@ export default async function handler(req, res) {
     const notionResponse = await fetch(notionEndpoint, {
       method: "POST",
       headers: {
-        "Authorization": `${process.env.NOTION_TOKEN}`,
-        "Notion-Version": process.env.NOTION_VERSION || "2022-06-28",
+        "Authorization": NOTION_TOKEN
+        "Notion-Version": NOTION_VERSION
         "Content-Type": "application/json"
       },
       body: JSON.stringify(body)
